@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useState } from 'react'
 import {
   CButton,
   CCard,
@@ -14,12 +14,32 @@ import {
   CRow
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
+import { useAuth } from '../../contexts/UserContext'
 
 const Register = () => {
-    const phoneRef = useRef();
-    const emailRef = useRef();
-    const passwordRef = useRef();
-    const passwordConfirmRef = useRef();
+    const [phone, setPhone] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('')
+    const [error, setError] = useState('');
+    const [ loading, setLoading ] = useState(false);
+
+    const { signup } = useAuth();
+
+    async function handleSubmit(e) {
+      e.preventDefault()
+      if( password === confirmPassword ) {
+        setError('')
+        setLoading(true)
+        await signup(phone, email, password).catch( err => {
+          console.log(err)
+          setError('Failed')
+        })
+        setLoading(false)
+      } else {
+        setError('passwords do not match');
+      }
+    }
   return (
     <div className="c-app c-default-layout flex-row align-items-center">
       <CContainer>
@@ -27,22 +47,23 @@ const Register = () => {
           <CCol md="9" lg="7" xl="6">
             <CCard className="mx-4">
               <CCardBody className="p-4">
-                <CForm>
+                <CForm onSubmit={handleSubmit}>
                   <h1>Register</h1>
                   <p className="text-muted">Create your account</p>
+                  {error && <span>{error}</span>}
                   <CInputGroup className="mb-3">
                     <CInputGroupPrepend>
                       <CInputGroupText>
                         <CIcon name="cil-user" />
                       </CInputGroupText>
                     </CInputGroupPrepend>
-                    <CInput type="text" placeholder="Phone Number" autoComplete="username" ref={phoneRef} />
+                    <CInput type="text" placeholder="Phone Number" autoComplete="username" value={phone} onChange={e => setPhone(e.target.value)} />
                   </CInputGroup>
                   <CInputGroup className="mb-3">
                     <CInputGroupPrepend>
                       <CInputGroupText>@</CInputGroupText>
                     </CInputGroupPrepend>
-                    <CInput type="text" placeholder="Email" autoComplete="email" ref={emailRef}/>
+                    <CInput type="text" placeholder="Email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} />
                   </CInputGroup>
                   <CInputGroup className="mb-3">
                     <CInputGroupPrepend>
@@ -50,7 +71,7 @@ const Register = () => {
                         <CIcon name="cil-lock-locked" />
                       </CInputGroupText>
                     </CInputGroupPrepend>
-                    <CInput type="password" placeholder="Password" autoComplete="new-password" ref={passwordRef} />
+                    <CInput type="password" placeholder="Password" autoComplete="new-password" value={password} onChange={e => setPassword(e.target.value)} />
                   </CInputGroup>
                   <CInputGroup className="mb-4">
                     <CInputGroupPrepend>
@@ -58,9 +79,9 @@ const Register = () => {
                         <CIcon name="cil-lock-locked" />
                       </CInputGroupText>
                     </CInputGroupPrepend>
-                    <CInput type="password" placeholder="Repeat password" autoComplete="new-password" ref={passwordConfirmRef} />
+                    <CInput type="password" placeholder="Repeat password" autoComplete="new-password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
                   </CInputGroup>
-                  <CButton color="success" block>Create Account</CButton>
+                  <CButton type="submit" color="success" disabled={loading} block>Create Account</CButton>
                 </CForm>
               </CCardBody>
               <CCardFooter className="p-4">
