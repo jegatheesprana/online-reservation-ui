@@ -8,6 +8,7 @@ import {
   CImg
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
+import { useAuth } from '../contexts/UserContext'
 
 const TheHeaderDropdown = () => {
   return (

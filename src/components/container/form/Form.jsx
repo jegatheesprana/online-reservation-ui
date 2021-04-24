@@ -51,9 +51,10 @@ const Form = ({ title, children, action, handlers : {verify, formData, afterSubm
                 method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
-            }).then( () => {
+            })
+            .then( data => {
                 setIsPending(false)
-                afterSubmit()
+                afterSubmit(data)
             } )
             .catch( console.log )
         }
